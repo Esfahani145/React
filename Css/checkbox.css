@@ -1,0 +1,31 @@
+.custom-checkbox {
+    display: none;
+}
+
+.checkbox-label {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+    background-color: white;
+}
+
+.custom-checkbox:checked + .checkbox-label {
+    background-color: white;
+    border-color: #ccc;
+}
+
+.custom-checkbox:checked + .checkbox-label::after {
+    content: '✓';
+    position: absolute;
+    left:0;
+    top: 20%;
+    transform: translateY(-50%);
+    color: black;
+    font-size: 25px;
+}

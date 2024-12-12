@@ -1,11 +1,11 @@
-.action{
-    width: 15px;
-    height: 15px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    margin-right: 10px;
-    vertical-align: middle;
-    position: relative;
-    cursor: pointer;
-    background-color: white;
+.actions {  
+    justify-content: flex-end; 
+    margin-right: 20px; 
+    margin-left: 10px;
+}  
+
+.action {  
+    margin-left: 10px; 
+    cursor: pointer;  
+    display: contents;
 }

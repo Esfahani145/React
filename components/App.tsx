@@ -2,43 +2,48 @@
 
 import React, { useEffect, useState } from 'react';
 import TodoList from './TodoList';
-import TodoForm from './TodoForm';
 
-interface Subtask {  
-  id: number;  
-  task: string;  
-  completed: boolean;  
-}  
+interface Subtask {
+  id: number;
+  task: string;
+  completed: boolean;
+}
 
-interface Task {  
-  id: number;  
-  task: string;  
-  completed: boolean;  
-  subtasks: Subtask[]; 
-}  
+interface Task {
+  id: number;
+  task: string;
+  completed: boolean;
+  subtasks: Subtask[];
+}
 
-const MyApp: React.FC = () => {  
-  const [tasks, setTasks] = useState<Task[]>([]);   
+const MyApp: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  useEffect(() => {  
-    const fetchTasks = async () => {  
-        const response = await fetch('http://localhost:3001/tasks');  
-        if (response.ok) {  
-            const data = await response.json();  
-            setTasks(data);  
-        }  
-    };  
-    fetchTasks();  
-}, []);  
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch('http://localhost:3001/tasks');
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(data);
+      }
+    };
+    fetchTasks();
+  }, []);
 
-  return (  
-    <div>  
-      <h1 className='text-center text-white font-bold text-3xl'>..JUST DO IT..</h1>  
-      <TodoForm tasks={tasks} setTasks={setTasks} />  
-      <TodoList tasks={tasks} setTasks={setTasks} />  
+  return (
+    <div>
+      <h1 style={{
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '3rem'
+      }}>
+        ..JUST DO IT..
+      </h1>
+      <TodoList tasks={tasks} setTasks={setTasks} />
       <div style={{ height: '50px' }}></div>
-    </div>  
-  );  
+    </div>
+  );
 };
 
 export default MyApp;

@@ -1,39 +1,39 @@
-'use client'
-import React, {useState} from 'react';
+import React from 'react';  
 
-interface AddTaskprops{
-    onClose : () => void;
-    onSave : (task : string) => void;
-}
+interface AddTaskProps {  
+  onClose: () => void;  
+  onSave: (newTaskText: string) => Promise<void>;  
+  newTask: string;  
+  setNewTask: React.Dispatch<React.SetStateAction<string>>;  
+}  
 
-const AddTaskModal : React.FC<AddTaskprops> = ({onSave, onClose}) => {
-    const [task, setTask] = useState('');
-    const handelTask = () => {
-        if (task.trim() != ''){
-            onSave(task);
-        }
-    };
+const AddTaskModal: React.FC<AddTaskProps> = ({ onClose, onSave, newTask, setNewTask }) => {  
+  const handleSave = () => {  
+    if (newTask.trim()) {  
+      onSave(newTask);  
+    }  
+  };  
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-4 rounded shadow-lg">
-            <h2 className="text-lg font-bold mb-2">Add Task</h2>
-                <input
-                    type='text'
-                    value={task}
-                    onChange = {(e) => setTask(e.target.value)}
-                    placeholder='Enter Task'
-                />
-                <div className="flex justify-end mt-4">
-                    <button className="mr-2 bg-blue-600 text-white py-1 px-3 rounded" onClick={handelTask}>
-                        save
-                    </button>
-                    <button className="py-1 px-3 border rounded" onClick={onClose}>
-                        cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
+  return (  
+    <div>  
+      <h2>Add Task</h2>  
+      <div style={{  
+        display: 'grid',   
+        gridTemplateColumns: '1fr auto auto', 
+        gap: '10px', 
+        alignItems: 'center' 
+      }}>  
+        <input  
+          type="text"  
+          value={newTask}  
+          onChange={(e) => setNewTask(e.target.value)}  
+          placeholder="Enter task"  
+        />  
+        <button onClick={handleSave}>Save</button>  
+        <button onClick={onClose}>Close</button>  
+      </div>  
+    </div>  
+  );  
+};  
+
 export default AddTaskModal;

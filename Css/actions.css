@@ -1,11 +1,14 @@
-.actions {  
+.actions {   
     justify-content: flex-end; 
-    margin-right: 20px; 
-    margin-left: 10px;
-}  
+    margin-right: 20px;   
+    margin-left: 100px;  
+    gap: 10px; 
+} 
 
 .action {  
-    margin-left: 10px; 
+    margin-left: 20px;
     cursor: pointer;  
-    display: contents;
-}
+    background: none;
+    border: none;
+    padding: 0;
+}  

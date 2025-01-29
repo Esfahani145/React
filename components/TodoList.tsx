@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import EditModal from './Edit';
 import AddSubtaskModal from './AddSubtask';
-import AddTaskModal from './AddTask';
 import '../Css/table.css';
 import '../Css/checkbox.css';
 import '../Css/actions.css';
@@ -27,52 +26,24 @@ interface TodoListProps {
 }
 
 const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
-    const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState<boolean>(false);
-
-    const addTask = async (newTaskText: string) => {
-        const newTask: Task = {
-            id: Date.now(),  // Unique ID for the new task  
-            task: newTaskText,
-            completed: false,
-            subtasks: [],
-        };
-
-        const updatedTasks = [...tasks, newTask];
-        setTasks(updatedTasks);
-        try {
-            const response = await fetch('http://localhost:3001/tasks', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newTask),
-            });
-
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(`Failed to add the task: ${errorMessage}`);
-            }
-        } catch (error) {
-            console.error('Add Task Error:', error);
-            setTasks(tasks);
-        }
-        setIsAddTaskModalOpen(false);
-    };
 
     const deleteTask = async (id: number) => {
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
-        try {
-            const response = await fetch(`http://localhost:3001/tasks/${id}`, {
-                method: 'DELETE',
-            });
+        const confirmDelete = window.confirm('Are you sure you want to delete this task?');
+        if (confirmDelete) {
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+            try {
+                const response = await fetch(`http://localhost:3001/tasks/${id}`, {
+                    method: 'DELETE',
+                });
 
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(`Failed to delete the task: ${errorMessage}`);
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(`Failed to delete the task: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Delete Task Error:', error);
+                alert(error instanceof Error ? error.message : 'Unknown error');
             }
-        } catch (error) {
-            console.error('Delete Task Error:', error);
-            alert(error instanceof Error ? error.message : 'Unknown error');
         }
     };
 
@@ -170,7 +141,6 @@ const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
         }
     };
 
-
     const addSubtask = async (taskId: number, subtaskTask: string) => {
         const newSubtask = { id: Date.now(), task: subtaskTask, completed: false };
         const updatedTasks = tasks.map(task =>
@@ -244,31 +214,34 @@ const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
     };
 
     const deleteSubtask = async (taskId: number, subtaskId: number) => {
-        const updatedTasks = tasks.map(task =>
-            task.id === taskId
-                ? { ...task, subtasks: task.subtasks.filter(subtask => subtask.id !== subtaskId) }
-                : task
-        );
+        const confirmDelete = window.confirm('Are you sure you want to delete this task?');
+        if (confirmDelete) {
+            const updatedTasks = tasks.map(task =>
+                task.id === taskId
+                    ? { ...task, subtasks: task.subtasks.filter(subtask => subtask.id !== subtaskId) }
+                    : task
+            );
 
-        setTasks(updatedTasks);
+            setTasks(updatedTasks);
 
-        const taskToUpdate = updatedTasks.find(task => task.id === taskId);
-        try {
-            const response = await fetch(`http://localhost:3001/tasks/${taskId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(taskToUpdate),
-            });
+            const taskToUpdate = updatedTasks.find(task => task.id === taskId);
+            try {
+                const response = await fetch(`http://localhost:3001/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(taskToUpdate),
+                });
 
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(`Failed to update the subtask: ${errorMessage}`);
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(`Failed to update the subtask: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Delete Subtask Error:', error);
+                setTasks(tasks);
             }
-        } catch (error) {
-            console.error('Delete Subtask Error:', error);
-            setTasks(tasks);
         }
     };
 
@@ -304,25 +277,23 @@ const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
                     {task.subtasks.length > 0 && (
                         <div style={{ paddingLeft: '20px', marginTop: '5px', color: '#600' }}>
                             {task.subtasks.map(subtask => (
-                                <div key={subtask.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <div style={{ flexGrow: 1 }}> {/* این برای پر کردن فضای موجود است */}
+                                <div key={subtask.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color:'rgba(0, 0, 0, 0.9' }}>
+                                    <div style={{ flexGrow: 1 }}>
                                         <input
-                                            className="custom-checkbox"
                                             type="checkbox"
                                             checked={subtask.completed}
                                             onChange={() => toggleSubTask(task.id, subtask.id)}
                                             id={`subtask-${subtask.id}`}
                                         />
-                                        <label htmlFor={`subtask-${subtask.id}`} className="checkbox-label"></label>
                                         <span style={{ textDecoration: subtask.completed ? 'line-through' : 'none', marginLeft: '8px' }}>
                                             {subtask.task}
                                         </span>
                                     </div>
-                                    <div className='actions' style={{ marginLeft: '10px' }}>
-                                        <button onClick={() => editSubtask(task.id, subtask.id, subtask.task)} className='action'>
+                                    <div className='actions' >
+                                        <button onClick={() => editSubtask(task.id, subtask.id, subtask.task)} style={{color:'rgba(0, 0, 0, 0.7)'}} className='action'>
                                             <FontAwesomeIcon icon={faEdit} />
                                         </button>
-                                        <button onClick={() => deleteSubtask(task.id, subtask.id)} className='action'>
+                                        <button onClick={() => deleteSubtask(task.id, subtask.id)} style={{color:'rgba(0, 0, 0, 0.7)'}} className='action'>
                                             <FontAwesomeIcon icon={faTrash} />
                                         </button>
                                     </div>
@@ -356,22 +327,12 @@ const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
                         />
                     )}
                 </td>
-
             </tr>
         );
     };
 
     return (
         <div>
-            <button onClick={() => setIsAddTaskModalOpen(true)} className='action'>
-                <FontAwesomeIcon icon={faAdd} /> Add Task
-            </button>
-            {isAddTaskModalOpen && (
-                <AddTaskModal
-                    onClose={() => setIsAddTaskModalOpen(false)}
-                    onSave={addTask}
-                />
-            )}
             <table className='table'>
                 <thead>
                     <tr className='tr:hover'>
@@ -379,7 +340,7 @@ const TodoList: React.FC<TodoListProps> = ({ tasks, setTasks }) => {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     {tasks.map(task => (
                         <TodoItem key={task.id} task={task} />
                     ))}
